@@ -372,19 +372,32 @@ $("#saveNPost").click(function (){
 
 });
 $("#addFilePost").click(function(){
+	$("#NewFile").attr("accept", "")
 	$("#NewFile").click()
 
 });
 $("#NewFile").change(function (e){
-	
-	if (e.target.files[0].name){
-		if (!nPost.files){
-			nPost.files=[];
-			nPost.filesName=[];
+	if ($("#NewFile").attr("accept")==""){
+		if (e.target.files[0].name){
+			if (!nPost.files){
+				nPost.files=[];
+				nPost.filesName=[];
+			}
+			nPost.files.push(e.target.files[0])
+			nPost.filesName.push(e.target.files[0].name);
+			vistaPost()
 		}
-		nPost.files.push(e.target.files[0])
-		nPost.filesName.push(e.target.files[0].name);
-		vistaPost()
+
+	}else{
+		if(e.target.files[0].name){
+			if (!nPost.imagenes){
+				nPost.imagenes=[];
+				nPost.imagenesName=[];
+			}
+			nPost.imagenes.push(e.target.files[0])
+			nPost.imagenesName.push(e.target.files[0].name);
+			vistaPost()
+		}
 	}
 });
 
@@ -395,19 +408,59 @@ var mt = function (){
 
 var vistaPost = function (callback){
 	$("#adjuntosPost").html("");
+	$("#imagenesPost").html("");
+
 	if (nPost.filesName){
+
 		for (let a1 = 0; a1 < nPost.filesName.length ; a1++){
 			$("#adjuntosPost").append("<div class='col s10 grey lighten-2 offset-s1' style='padding:1em'><a id ='"+nPost.filesName[a1]+"'  onclick='removeAdjuntos(this)'><i class='right' >X</i></a><div> <i class='material-icons' >attach_file</i>"+nPost.filesName[a1]+"</div></div>")
 		}
 
 	}
+	if(nPost.imagenes){
+		if (nPost.imagenes.length ==1){
+			console.log(nPost.imagenes[0]);
+			let reader = new FileReader();
+			reader.readAsDataURL(nPost.imagenes[0])
+			reader.onload = function(){
+				$("#imagenesPost").append("<div class='col s12'><a onclick=removerImagen("+0+")><i class='right' >X</i> </a><img class='responsive-img' src='"+reader.result+"'></div>")
+			}
+			
+		}
+	}
+	if (callback){
+		callback()
+	}
 }
 var removeAdjuntos = function (e){
-	console.log(e.id)
 	
+	let index = nPost.filesName.indexOf(e.id)
+	nPost.filesName.splice(index, 1)
+	nPost.files.splice(index, 1)
+	vistaPost(function (){
+		if (nPost.files.length == 0){
+			delete nPost.files;
+			delete nPost.filesName;
+		}
+	})
+}
+var removerImagen = function(ien){
+		nPost.imagenesName.splice(ien, 1)
+		nPost.imagenes.splice(ien, 1)
+		vistaPost(function (){
+		if (nPost.imagenes.length == 0){
+			delete nPost.imagenes;
+			delete nPost.imagenesName;
+		}
+	})
 }
 
+$("#addFotoPost").click(function (e){
+	$("#NewFile").attr("accept", "image/*")
+	$("#NewFile").click()
 
+
+})
 
 
 
