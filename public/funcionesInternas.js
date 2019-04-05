@@ -373,16 +373,23 @@ $("#saveNPost").click(function (){
 });
 $("#addFilePost").click(function(){
 	$("#NewFile").attr("accept", "")
+<<<<<<< HEAD
 	$("#NewFile").click()
 
 });
 $("#addFotoPost").click(function(){
 	$("#NewFile").attr("accept", "image/*")
+=======
+>>>>>>> 1644b1820c40e1e58f54299d32244e2280a8b68b
 	$("#NewFile").click()
 
 });
 $("#NewFile").change(function (e){
+<<<<<<< HEAD
 	if ($("#NewFile").attr("accept") == ""){
+=======
+	if ($("#NewFile").attr("accept")==""){
+>>>>>>> 1644b1820c40e1e58f54299d32244e2280a8b68b
 		if (e.target.files[0].name){
 			if (!nPost.files){
 				nPost.files=[];
@@ -392,6 +399,7 @@ $("#NewFile").change(function (e){
 			nPost.filesName.push(e.target.files[0].name);
 			vistaPost()
 		}
+<<<<<<< HEAD
 	}else{
 		if (e.target.files[0].name){
 			if (!nPost.imagenes){
@@ -437,6 +445,18 @@ $("#NewFile").change(function (e){
 
 			/*nPost.imagenes.push(e.target.files[0])
 			vistaPost()*/
+=======
+
+	}else{
+		if(e.target.files[0].name){
+			if (!nPost.imagenes){
+				nPost.imagenes=[];
+				nPost.imagenesName=[];
+			}
+			nPost.imagenes.push(e.target.files[0])
+			nPost.imagenesName.push(e.target.files[0].name);
+			vistaPost()
+>>>>>>> 1644b1820c40e1e58f54299d32244e2280a8b68b
 		}
 	}
 });
@@ -451,19 +471,24 @@ var vistaPost = function (callback){
 
 	$("#adjuntosPost").html("");
 	$("#imagenesPost").html("");
+<<<<<<< HEAD
 	$("#postTextArea").removeClass("color")
 	$("#postTextArea").attr("style", "")
 	$("#postTextArea").removeClass("verde")
 	$("#postTextArea").removeClass("naranja")
 	$("#postTextArea").removeClass("azul")
 
+=======
+>>>>>>> 1644b1820c40e1e58f54299d32244e2280a8b68b
 
 	if (nPost.filesName){
+
 		for (let a1 = 0; a1 < nPost.filesName.length ; a1++){
 			$("#adjuntosPost").append("<div class='col s10 grey lighten-2 offset-s1' style='padding:1em'><a  onclick='removeAdjuntos("+a1+")'><i class='right' >X</i></a><div> <i class='material-icons' >attach_file</i>"+nPost.filesName[a1]+"</div></div>")
 		}
 
 	}
+<<<<<<< HEAD
 	if (nPost.imagenes){
 		console.log(nPost.dataImg)
 		if (nPost.imagenes.length == 1){
@@ -549,8 +574,49 @@ var removeImagenes = function (indez){
 			console.log(nPost)
 		})
 
+=======
+	if(nPost.imagenes){
+		if (nPost.imagenes.length ==1){
+			console.log(nPost.imagenes[0]);
+			let reader = new FileReader();
+			reader.readAsDataURL(nPost.imagenes[0])
+			reader.onload = function(){
+				$("#imagenesPost").append("<div class='col s12'><a onclick=removerImagen("+0+")><i class='right' >X</i> </a><img class='responsive-img' src='"+reader.result+"'></div>")
+			}
+			
+		}
+	}
+	if (callback){
+		callback()
+	}
+}
+var removeAdjuntos = function (e){
+	
+	let index = nPost.filesName.indexOf(e.id)
+	nPost.filesName.splice(index, 1)
+	nPost.files.splice(index, 1)
+	vistaPost(function (){
+		if (nPost.files.length == 0){
+			delete nPost.files;
+			delete nPost.filesName;
+		}
+	})
+}
+var removerImagen = function(ien){
+		nPost.imagenesName.splice(ien, 1)
+		nPost.imagenes.splice(ien, 1)
+		vistaPost(function (){
+		if (nPost.imagenes.length == 0){
+			delete nPost.imagenes;
+			delete nPost.imagenesName;
+		}
+	})
+>>>>>>> 1644b1820c40e1e58f54299d32244e2280a8b68b
 }
 
+$("#addFotoPost").click(function (e){
+	$("#NewFile").attr("accept", "image/*")
+	$("#NewFile").click()
 
 	var URLtoBlob =function (dataURI) {
 		// convert base64/URLEncoded data component to raw binary data held in a string
@@ -568,6 +634,8 @@ var removeImagenes = function (indez){
 		}
 		return new Blob([ia], {type:mimeString});
 	}
+
+})
 
 
 
