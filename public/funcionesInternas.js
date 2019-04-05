@@ -372,19 +372,72 @@ $("#saveNPost").click(function (){
 
 });
 $("#addFilePost").click(function(){
+	$("#NewFile").attr("accept", "")
+	$("#NewFile").click()
+
+});
+$("#addFotoPost").click(function(){
+	$("#NewFile").attr("accept", "image/*")
 	$("#NewFile").click()
 
 });
 $("#NewFile").change(function (e){
-	
-	if (e.target.files[0].name){
-		if (!nPost.files){
-			nPost.files=[];
-			nPost.filesName=[];
+	if ($("#NewFile").attr("accept") == ""){
+		if (e.target.files[0].name){
+			if (!nPost.files){
+				nPost.files=[];
+				nPost.filesName=[];
+			}
+			nPost.files.push(e.target.files[0])
+			nPost.filesName.push(e.target.files[0].name);
+			vistaPost()
 		}
-		nPost.files.push(e.target.files[0])
-		nPost.filesName.push(e.target.files[0].name);
-		vistaPost()
+	}else{
+		if (e.target.files[0].name){
+			if (!nPost.imagenes){
+				nPost.imagenes=[];
+				nPost.dataImg=[];	
+				nPost.dataURLimg=[];	
+			}
+			console.log(e.target.files[0].size);
+			let canvasPost = document.createElement("canvas")
+			let contextP = canvasPost.getContext("2d");
+			let reader = new FileReader();
+			reader.readAsDataURL(e.target.files[0]);
+			reader.onload = function (){
+				let nImagen = new Image();
+				nImagen.src = reader.result;
+				nImagen.onload = function (){
+					if (e.target.files[0].size >= 307200 ){
+						canvasPost.width = nImagen.width/3.6
+						canvasPost.height = nImagen.height /3.6
+						contextP.drawImage(nImagen, 0,0, canvasPost.width, canvasPost.height) 
+						nPost.imagenes.push(URLtoBlob(canvasPost.toDataURL())) 
+						nPost.dataURLimg.push(canvasPost.toDataURL())
+						nPost.dataImg.push(canvasPost.height )
+						vistaPost(()=>{
+							delete canvasPost;
+							delete reader;
+							delete nImagen;
+						})
+					}else{
+						nPost.imagenes.push(e.target.files[0])
+						nPost.dataURLimg.push(nImagen.src)
+						nPost.dataImg.push(nImagen.height)
+						vistaPost(()=>{
+							delete canvasPost;
+							delete reader;
+							delete nImagen;
+						})
+					}
+
+				}
+			}
+		
+
+			/*nPost.imagenes.push(e.target.files[0])
+			vistaPost()*/
+		}
 	}
 });
 
@@ -393,21 +446,128 @@ var mt = function (){
 	return  Math.floor(fecha / 100)
 }
 
+
 var vistaPost = function (callback){
+
 	$("#adjuntosPost").html("");
+	$("#imagenesPost").html("");
+	$("#postTextArea").removeClass("color")
+	$("#postTextArea").attr("style", "")
+	$("#postTextArea").removeClass("verde")
+	$("#postTextArea").removeClass("naranja")
+	$("#postTextArea").removeClass("azul")
+
+
 	if (nPost.filesName){
 		for (let a1 = 0; a1 < nPost.filesName.length ; a1++){
-			$("#adjuntosPost").append("<div class='col s10 grey lighten-2 offset-s1' style='padding:1em'><a id ='"+nPost.filesName[a1]+"'  onclick='removeAdjuntos(this)'><i class='right' >X</i></a><div> <i class='material-icons' >attach_file</i>"+nPost.filesName[a1]+"</div></div>")
+			$("#adjuntosPost").append("<div class='col s10 grey lighten-2 offset-s1' style='padding:1em'><a  onclick='removeAdjuntos("+a1+")'><i class='right' >X</i></a><div> <i class='material-icons' >attach_file</i>"+nPost.filesName[a1]+"</div></div>")
 		}
 
 	}
+	if (nPost.imagenes){
+		console.log(nPost.dataImg)
+		if (nPost.imagenes.length == 1){
+			
+				$("#imagenesPost").append("<div class='col s12'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+					+"<img src='"+nPost.dataURLimg[0]+"' class='responsive-img' width='100%'  height='auto'>"
+					+"</div>");
+		}
+		if(nPost.imagenes.length == 2){
+			let alto = (nPost.dataImg[0] +  nPost.dataImg[1])/2 ;
+			if (alto > 360){
+				alto=360
+			}
+			console.log(alto)
+			
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[0]+"); background-repeat: no-repeat; background-position: center;'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+				+"</div>");	
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[1]+"); background-repeat: no-repeat;  background-position: center;'><a onclick='removeImagenes("+1+")' ><i class='right'>X</i></a>"
+				+"</div>");
+		}
+		if(nPost.imagenes.length == 3){
+			let alto = (nPost.dataImg[0] +  nPost.dataImg[1] +   nPost.dataImg[2])/3 ;
+			if (alto > 180){
+				alto=180
+			}
+			console.log(alto)
+			
+				$("#imagenesPost").append("<div class='col s12' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[0]+"); background-repeat: no-repeat; background-position: center;'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+				+"</div>");	
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[1]+"); background-repeat: no-repeat;  background-position: center;'><a onclick='removeImagenes("+1+")' ><i class='right'>X</i></a>"
+				+"</div>");
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[2]+"); background-repeat: no-repeat; background-position: center;'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+				+"</div>");
+		}		
+		if(nPost.imagenes.length > 3){
+			let alto = (nPost.dataImg[0] +  nPost.dataImg[1] +   nPost.dataImg[2]+ nPost.dataImg[3])/4 ;
+			if (alto > 180){
+				alto=180
+			}
+			console.log(alto)
+			
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[0]+"); background-repeat: no-repeat; background-position: center;'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+				+"</div>");	
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[1]+"); background-repeat: no-repeat;  background-position: center;'><a onclick='removeImagenes("+1+")' ><i class='right'>X</i></a>"
+				+"</div>");
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[2]+"); background-repeat: no-repeat; background-position: center;'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+				+"</div>");
+				$("#imagenesPost").append("<div class='col s6' style='height:"+alto+"px !important; background-image: url("+nPost.dataURLimg[3]+"); background-repeat: no-repeat; background-position: center;'><a onclick='removeImagenes("+0+")' ><i class='right'>X</i></a>"
+				+"</div>");	
+		}			
+
+
+	}
+
+	if (callback){
+		callback();
+	}
 }
-var removeAdjuntos = function (e){
-	console.log(e.id)
-	
+var removeAdjuntos = function (indez){
+		nPost.filesName.splice(indez,1)
+		nPost.files.splice(indez,1)
+		vistaPost(function (){
+			if (nPost.filesName.length == 0){
+				delete nPost.filesName;
+				delete nPost.files;
+			}
+		})
+
+}
+var removeImagenes = function (indez){
+
+		nPost.imagenes.splice(indez,1)
+		nPost.dataImg.splice(indez,1)
+		nPost.dataURLimg.splice(indez,1)
+		vistaPost(function (){
+			if (nPost.imagenes.length == 0){			
+				delete nPost.imagenes;
+				delete nPost.dataImg;
+				delete nPost.dataURLimg;
+
+
+			}
+			console.log(nPost)
+		})
+
 }
 
 
+	var URLtoBlob =function (dataURI) {
+		// convert base64/URLEncoded data component to raw binary data held in a string
+		var byteString;
+		if (dataURI.split(',')[0].indexOf('base64') >= 0)
+		    byteString = atob(dataURI.split(',')[1]);
+		else
+		    byteString = unescape(dataURI.split(',')[1]);
+		// separate out the mime component
+		var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+		// write the bytes of the string to a typed array
+		var ia = new Uint8Array(byteString.length);
+		for (var i = 0; i < byteString.length; i++) {
+		    ia[i] = byteString.charCodeAt(i);
+		}
+		return new Blob([ia], {type:mimeString});
+	}
 
 
 

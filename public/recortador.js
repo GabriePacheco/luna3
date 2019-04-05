@@ -40,7 +40,7 @@ var gpRecortador  =  function (objeto, callback) {
 
 	botoneraRecortador.innerHTML= '<a id ="botonAddImage'+marca+'" class="btn-floating btn-small waves-effect waves-light right"><i class="material-icons">camera_alt</i></a>';
 	botoneraRecortador.innerHTML += '<a id ="botonCutImage'+marca+'" class="btn-floating btn-small waves-effect waves-light left hide"><i class="material-icons">crop</i></a>' ;
-	botoneraRecortador.innerHTML += ' <input type="file" class="hide" id ="fileAddImagen'+marca+'">' ;
+	botoneraRecortador.innerHTML += ' <input type="file" class="hide" id ="fileAddImagen'+marca+'" accept="image/*">' ;
 	var fileAddImagen= document.getElementById("fileAddImagen"+marca);
 	recortador.innerHTML = '<canvas id = "myCanvas'+marca+'"></canvas>';
 	canvas = document.getElementById("myCanvas" +marca+"");
